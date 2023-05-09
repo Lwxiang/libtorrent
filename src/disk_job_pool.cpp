@@ -51,8 +51,7 @@ namespace libtorrent {
 	disk_io_job* disk_job_pool::allocate_job(job_action_t const type)
 	{
 		std::unique_lock<std::mutex> l(m_job_mutex);
-		disk_io_job* ptr = static_cast<disk_io_job*>(m_job_pool.malloc());
-		m_job_pool.set_next_size(100);
+		disk_io_job* ptr = static_cast<disk_io_job*>(::malloc(sizeof(disk_io_job)));
 		++m_jobs_in_use;
 		if (type == job_action_t::read) ++m_read_jobs;
 		else if (type == job_action_t::write) ++m_write_jobs;
@@ -81,7 +80,7 @@ namespace libtorrent {
 		if (type == job_action_t::read) --m_read_jobs;
 		else if (type == job_action_t::write) --m_write_jobs;
 		--m_jobs_in_use;
-		m_job_pool.free(j);
+		free(j);
 	}
 
 	void disk_job_pool::free_jobs(disk_io_job** j, int const num)
@@ -103,6 +102,6 @@ namespace libtorrent {
 		m_write_jobs -= write_jobs;
 		m_jobs_in_use -= num;
 		for (int i = 0; i < num; ++i)
-			m_job_pool.free(j[i]);
+			free(j[i]);
 	}
 }
