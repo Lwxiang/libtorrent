@@ -3108,6 +3108,34 @@ bool is_downloading_state(int const st)
 
 				if (state.done) continue;
 
+				// skip the unmatched endpoints
+				// if tracker target is v6, then do not let the v4 socket to request
+				// if tracker target is loopback, then do not let the non-loopback socket to request
+				auto t_head = req.url.find("udp://");
+				if (t_head == std::string::npos)
+					t_head = 0;
+				else
+					t_head += 6;
+
+				auto t_tail = req.url.find_last_of(":");
+				if (t_tail == std::string::npos)
+					t_tail = req.url.size();
+
+				if (t_tail - t_head > 0)
+				{
+					auto t_is_v6 = req.url.substr(t_head, t_tail - t_head).find(":") != std::string::npos;
+					auto t_is_loopback = req.url.find("127.0.0.1:") != std::string::npos || req.url.find("[::1]:") != std::string::npos;
+
+					// v4 socket handle the v4 tracker address
+					// v6 socket handle the v6 tracker address
+					// loopback socket handle the loopback tracker address
+					// non-loopback socket handle the non-loopback tracker address
+					if ((t_is_v6 xor aep.local_endpoint.address().is_v6()) || (t_is_loopback xor aep.local_endpoint.address().is_loopback()))
+					{
+						aep.enabled = false;
+					}
+				}
+
 				// if we haven't sent an event=start to the tracker, there's no
 				// point in sending an event=stopped
 				if (!aep.enabled || (!aep.start_sent && req.event == tracker_request::stopped))
