@@ -682,6 +682,11 @@ namespace libtorrent {
 		async_call(&torrent::add_piece_async, piece, std::move(data), flags);
 	}
 
+	uint64_t torrent_handle::get_queued_write_bytes() const
+	{
+		return sync_call_ret<uint64_t>(0, &torrent::get_queued_write_bytes);
+	}
+
 	void torrent_handle::read_piece(piece_index_t piece) const
 	{
 		async_call(&torrent::read_piece, piece);
