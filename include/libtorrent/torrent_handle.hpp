@@ -294,6 +294,8 @@ namespace aux {
 		void add_piece(piece_index_t piece, char const* data, add_piece_flags_t flags = {}) const;
 		void add_piece(piece_index_t piece, std::vector<char> data, add_piece_flags_t flags = {}) const;
 
+		uint64_t get_queued_write_bytes() const;
+
 		// This function starts an asynchronous read operation of the specified
 		// piece from this torrent. You must have completed the download of the
 		// specified piece before calling this function.

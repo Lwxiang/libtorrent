@@ -436,6 +436,13 @@ namespace libtorrent {
 
 		void add_piece(piece_index_t piece, char const* data, add_piece_flags_t flags);
 		void add_piece_async(piece_index_t piece, std::vector<char> data, add_piece_flags_t flags);
+
+		uint64_t get_queued_write_bytes() const try
+		{
+			return m_stats_counters[counters::queued_write_bytes];
+		}
+		catch (...) { return 0; }
+
 		void on_disk_write_complete(storage_error const& error
 			, peer_request const& p);
 
