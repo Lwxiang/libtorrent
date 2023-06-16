@@ -9261,8 +9261,8 @@ bool is_downloading_state(int const st)
 		}
 		else if (next_announce == time_point32::max())
 		{
-			// if no tracker can be announced to, check again in a minute
-			next_announce = now + minutes32(1);
+			// if no tracker can be announced to, check again in 5 seconds
+			next_announce = now + seconds32(5);
 #ifndef TORRENT_DISABLE_LOGGING
 			none_eligible = true;
 #endif
