@@ -1741,6 +1741,7 @@ void block_cache::reclaim_block(storage_interface* st, aux::block_cache_referenc
 bool block_cache::maybe_free_piece(cached_piece_entry* pe)
 {
 	if (!pe->ok_to_evict()
+		|| !pe->marked_for_eviction
 		|| !pe->jobs.empty())
 		return false;
 
