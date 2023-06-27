@@ -107,6 +107,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "libtorrent/aux_/torrent_impl.hpp"
 
+#ifdef TORRENT_WINDOWS
+#include <iso646.h>
+#endif
+
 using namespace std::placeholders;
 
 namespace libtorrent {

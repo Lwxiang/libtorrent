@@ -79,7 +79,6 @@ namespace libtorrent {
 		TORRENT_ASSERT(p->in_use);
 		if (p->is_v6_addr)
 		{
-			TORRENT_ASSERT(m_ipv6_peer_pool.is_from(static_cast<libtorrent::ipv6_peer*>(p)));
 			static_cast<libtorrent::ipv6_peer*>(p)->~ipv6_peer();
 			free(p);
 			TORRENT_ASSERT(m_live_bytes >= int(sizeof(ipv6_peer)));
@@ -91,7 +90,6 @@ namespace libtorrent {
 #if TORRENT_USE_I2P
 		if (p->is_i2p_addr)
 		{
-			TORRENT_ASSERT(m_i2p_peer_pool.is_from(static_cast<libtorrent::i2p_peer*>(p)));
 			static_cast<libtorrent::i2p_peer*>(p)->~i2p_peer();
 			free(p);
 			TORRENT_ASSERT(m_live_bytes >= int(sizeof(i2p_peer)));
@@ -101,7 +99,6 @@ namespace libtorrent {
 			return;
 		}
 #endif
-		TORRENT_ASSERT(m_ipv4_peer_pool.is_from(static_cast<libtorrent::ipv4_peer*>(p)));
 		static_cast<libtorrent::ipv4_peer*>(p)->~ipv4_peer();
 		free(p);
 		TORRENT_ASSERT(m_live_bytes >= int(sizeof(ipv4_peer)));
