@@ -2851,7 +2851,11 @@ constexpr disk_job_flags_t disk_interface::cache_hit;
 
 	status_t disk_io_thread::do_trim_cache(disk_io_job*, jobqueue_t& /* completed_jobs */)
 	{
-//#error implement
+		std::unique_lock<std::mutex> l(m_cache_mutex);
+
+		int evict = m_disk_cache.num_to_evict(0);
+		if (evict > 0) m_disk_cache.try_evict_blocks(evict, nullptr);
+
 		return status_t::no_error;
 	}
 
