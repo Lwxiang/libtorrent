@@ -40,6 +40,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #else
 #include "libtorrent/aux_/disable_warnings_push.hpp"
 #include <boost/asio/high_resolution_timer.hpp>
+#include <boost/asio/steady_timer.hpp>
 #include "libtorrent/aux_/disable_warnings_pop.hpp"
 #endif // SIMULATOR
 
@@ -48,7 +49,7 @@ namespace libtorrent {
 #if defined TORRENT_BUILD_SIMULATOR
 	using deadline_timer = sim::asio::high_resolution_timer;
 #else
-	using deadline_timer = boost::asio::high_resolution_timer;
+	using deadline_timer = boost::asio::steady_timer;
 #endif
 }
 

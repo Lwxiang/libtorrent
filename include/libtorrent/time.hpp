@@ -49,7 +49,7 @@ namespace libtorrent {
 #if defined TORRENT_BUILD_SIMULATOR
 	using clock_type = sim::chrono::high_resolution_clock;
 #else
-	using clock_type = std::chrono::high_resolution_clock;
+	using clock_type = std::chrono::steady_clock;
 #endif
 
 	using time_point = clock_type::time_point;
