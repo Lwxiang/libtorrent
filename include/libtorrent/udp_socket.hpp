@@ -140,6 +140,8 @@ namespace libtorrent {
 
 		bool active_socks5() const;
 
+		udp::socket& get_socket() { return m_socket; }
+
 	private:
 
 		// non-copyable
