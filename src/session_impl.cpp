@@ -181,6 +181,8 @@ namespace {
 #ifdef TORRENT_WINDOWS
 // for ERROR_SEM_TIMEOUT
 #include <winerror.h>
+#include <Windows.h>
+#include <io.h>
 #endif
 
 using namespace std::placeholders;
@@ -1515,6 +1517,16 @@ namespace {
 						, err.message().c_str());
 				}
 #endif // TORRENT_DISABLE_LOGGING
+
+				// disable the socket inherit
+				try
+				{
+					boost::asio::detail::socket_type nativeSocket = ret->sock->native_handle();
+					SOCKET nativeHandle = static_cast<SOCKET>(nativeSocket);
+					SetHandleInformation((HANDLE)nativeHandle, HANDLE_FLAG_INHERIT, 0);
+				}
+				catch (...)
+				{}
 			}
 #else
 
@@ -1700,6 +1712,18 @@ namespace {
 
 			return ret;
 		}
+
+#ifdef TORRENT_WINDOWS
+		// disable the socket inherit
+		try
+		{
+			boost::asio::detail::socket_type nativeSocket = ret->udp_sock->sock.get_socket().native_handle();
+			SOCKET nativeHandle = static_cast<SOCKET>(nativeSocket);
+			SetHandleInformation((HANDLE)nativeHandle, HANDLE_FLAG_INHERIT, 0);
+		}
+		catch (...)
+		{}
+#endif // TORRENT_WINDOWS
 
 #if TORRENT_HAS_BINDTODEVICE
 		if (!lep.device.empty())
@@ -2599,6 +2623,17 @@ namespace {
 		COMPLETE_ASYNC("session_impl::on_accept_connection");
 		m_stats_counters.inc_stats_counter(counters::on_accept_counter);
 		m_stats_counters.inc_stats_counter(counters::num_outstanding_accept, -1);
+
+#ifdef _WIN32
+		try
+		{
+			boost::asio::detail::socket_type nativeSocket = s->get<tcp::socket>()->native_handle();
+			SOCKET nativeHandle = static_cast<SOCKET>(nativeSocket);
+			SetHandleInformation((HANDLE)nativeHandle, HANDLE_FLAG_INHERIT, 0);
+		}
+		catch(...)
+		{}
+#endif
 
 		TORRENT_ASSERT(is_single_thread());
 		std::shared_ptr<tcp::acceptor> listener = listen_socket.lock();
