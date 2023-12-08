@@ -443,6 +443,12 @@ namespace libtorrent {
 		}
 		catch (...) { return 0; }
 
+		uint64_t get_read_jobs_num() const try
+		{
+			return m_stats_counters[counters::num_read_jobs];
+		}
+		catch (...) { return 0; }
+
 		void on_disk_write_complete(storage_error const& error
 			, peer_request const& p);
 

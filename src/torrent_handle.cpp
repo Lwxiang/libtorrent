@@ -688,6 +688,12 @@ namespace libtorrent {
 		return t ? t->get_queued_write_bytes() : 0;
 	}
 
+	uint64_t torrent_handle::get_queued_read_bytes() const
+	{
+		std::shared_ptr<torrent> t = m_torrent.lock();
+		return t ? t->get_read_jobs_num() * 0x4000 : 0;
+	}
+
 	void torrent_handle::read_piece(piece_index_t piece) const
 	{
 		async_call(&torrent::read_piece, piece);
