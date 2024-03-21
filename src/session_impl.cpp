@@ -3190,7 +3190,7 @@ namespace {
 		// The IPv4 header is 20 bytes
 		// and IPv6 header is 40 bytes
 		int const header = (ipv6 ? 40 : 20) + 20;
-		int const mtu = 1500;
+		int const mtu = 1400;
 		int const packet_size = mtu - header;
 		int const overhead = std::max(1, (bytes + packet_size - 1) / packet_size) * header;
 		m_stats_counters.inc_stats_counter(counters::sent_ip_overhead_bytes
