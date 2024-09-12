@@ -128,6 +128,10 @@ enum class if_state : std::uint8_t {
 	TORRENT_EXTRA_EXPORT bool match_addr_mask(address const& a1
 		, address const& a2, address const& mask);
 
+	// return (a1 == a2)
+	TORRENT_EXTRA_EXPORT bool match_addr_exact(address const& a1
+		, address const& a2);
+
 	// return a netmask with the specified address family and the specified
 	// number of prefix bit set, of the most significant bits in the resulting
 	// netmask

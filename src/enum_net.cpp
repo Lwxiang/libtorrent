@@ -629,6 +629,14 @@ int _System __libsocket_sysctl(int* mib, u_int namelen, void *oldp, size_t *oldl
 			== (a2.to_v4().to_ulong() & mask.to_v4().to_ulong());
 	}
 
+	bool match_addr_exact(address const& a1, address const& a2)
+	{
+		if (a1.is_v4() != a2.is_v4()) return false;
+		if (a1.is_v6() && a1.to_v6().scope_id() != a2.to_v6().scope_id()) return false;
+
+		return a1.to_string() == a2.to_string();
+	}
+
 	std::vector<ip_interface> enum_net_interfaces(io_service& ios, error_code& ec)
 	{
 		TORRENT_UNUSED(ios); // this may be unused depending on configuration

@@ -315,16 +315,22 @@ namespace aux {
 	{
 		for (auto& ep : eps)
 		{
-			auto const iface = ep.device.empty()
-				? std::find_if(ifs.begin(), ifs.end(), [&](ip_interface const& ipface)
-					{
-						return match_addr_mask(ipface.interface_address, ep.addr, ipface.netmask);
-					})
-				: std::find_if(ifs.begin(), ifs.end(), [&](ip_interface const& ipface)
-					{
-						return ipface.name == ep.device
-							&& match_addr_mask(ipface.interface_address, ep.addr, ipface.netmask);
-					});
+			// try to exactly match the address first.
+			auto iface = std::find_if(ifs.begin(), ifs.end(), [&](ip_interface const& ipface)
+			{
+				return (ep.device.empty() || ipface.name == ep.device) &&
+					match_addr_exact(ipface.interface_address, ep.addr);
+			});
+
+			// then try to match the address with mask.
+			if (iface == ifs.end())
+			{
+				iface = std::find_if(ifs.begin(), ifs.end(), [&](ip_interface const& ipface)
+				{
+					return (ep.device.empty() || ipface.name == ep.device) &&
+						match_addr_mask(ipface.interface_address, ep.addr, ipface.netmask);
+				});
+			}
 
 			if (iface == ifs.end())
 			{
