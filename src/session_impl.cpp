@@ -1906,6 +1906,11 @@ namespace {
 
 	void session_impl::reopen_listen_sockets(bool const map_ports)
 	{
+		if (m_settings.get_bool(settings_pack::disable_listen_sockets))
+		{
+			return;
+		}
+
 #ifndef TORRENT_DISABLE_LOGGING
 		session_log("reopen listen sockets");
 #endif

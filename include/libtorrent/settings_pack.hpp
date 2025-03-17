@@ -869,6 +869,10 @@ namespace aux {
 			// happen at the application level.
 			allow_idna,
 
+			// will not listen on any sockets.
+			// all connections should be outgoing.
+			disable_listen_sockets,
+
 			max_bool_setting_internal
 		};
 
