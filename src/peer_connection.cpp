@@ -5242,7 +5242,8 @@ namespace libtorrent {
 
 			if (seed_mode
 				&& !t->verified_piece(r.piece)
-				&& !m_settings.get_bool(settings_pack::disable_hash_checks))
+				&& !m_settings.get_bool(settings_pack::disable_hash_checks)
+				&& !m_settings.get_bool(settings_pack::disable_seed_mode_hash_check))
 			{
 				// we're still verifying the hash of this piece
 				// so we can't return it yet.
