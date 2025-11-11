@@ -2491,6 +2491,10 @@ bool is_downloading_state(int const st)
 	{
 		TORRENT_ASSERT(should_check_files());
 
+		int hasher_thread_divisor = settings().get_int(settings_pack::hash_thread_divisor);
+		if (hasher_thread_divisor <= 1)
+			hasher_thread_divisor = disk_io_thread::hasher_thread_divisor;
+
 		int num_outstanding = settings().get_int(settings_pack::checking_mem_usage) * block_size()
 			/ m_torrent_file->piece_length();
 		// if we only keep a single read operation in-flight at a time, we suffer
@@ -2498,7 +2502,7 @@ bool is_downloading_state(int const st)
 		// outstanding per hasher thread
 		int const min_outstanding = 4
 			* std::max(1, settings().get_int(settings_pack::aio_threads)
-				/ disk_io_thread::hasher_thread_divisor);
+				/ hasher_thread_divisor);
 		if (num_outstanding < min_outstanding) num_outstanding = min_outstanding;
 
 		// we might already have some outstanding jobs, if we were paused and

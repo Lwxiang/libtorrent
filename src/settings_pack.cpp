@@ -214,6 +214,7 @@ constexpr int CLOSE_FILE_INTERVAL = 0;
 		SET(ssrf_mitigation, true, nullptr),
 		SET(allow_idna, false, nullptr),
 		SET(disable_listen_sockets, false, nullptr),
+		SET(disable_seed_mode_hash_check, false, nullptr),
 	}});
 
 	aux::array<int_setting_entry_t, settings_pack::num_int_settings> const int_settings
@@ -356,6 +357,7 @@ constexpr int CLOSE_FILE_INTERVAL = 0;
 		SET(rate_choker_initial_threshold, 1024, nullptr),
 		SET(upnp_lease_duration, 3600, nullptr),
 		SET(max_concurrent_http_announces, 50, nullptr),
+		SET(hash_thread_divisor, 4, nullptr),
 	}});
 
 #undef SET

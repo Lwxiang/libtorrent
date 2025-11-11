@@ -342,8 +342,13 @@ constexpr disk_job_flags_t disk_interface::cache_hit;
 		m_file_pool.resize(m_settings.get_int(settings_pack::file_pool_size));
 
 		int const num_threads = m_settings.get_int(settings_pack::aio_threads);
+
+		int divisor = m_settings.get_int(settings_pack::hash_thread_divisor);
+		if (divisor <= 1)
+			divisor = hasher_thread_divisor;
+
 		// add one hasher thread for every three generic threads
-		int const num_hash_threads = num_threads / hasher_thread_divisor;
+		int const num_hash_threads = num_threads / divisor;
 
 		DLOG("set_max_threads(%d, %d)\n", num_threads - num_hash_threads
 			, num_hash_threads);
