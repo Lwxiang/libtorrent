@@ -1271,10 +1271,16 @@ namespace {
 			int const sibling = merkle_get_sibling(n);
 			int const parent = merkle_get_parent(n);
 			auto const sibling_hash = subtree.find(sibling);
-			if (sibling_hash == subtree.end())
-				return false;
+			if (sibling_hash == subtree.end()) break;
+
+			// if current node is zero, skip all of the rest nodes to root.
+			if (h.is_all_zeros()) break;
 			to_add[n] = h;
+
+			// if sibling node is zero, skip all of the rest nodes to root.
+			if (sibling_hash->second.is_all_zeros()) break;
 			to_add[sibling] = sibling_hash->second;
+
 			hasher hs;
 			if (sibling < n)
 			{
@@ -1289,11 +1295,9 @@ namespace {
 			h = hs.final();
 			n = parent;
 		}
-		if (h != m_merkle_tree[0]) return false;
+		if (!m_merkle_tree[n].is_all_zeros() && h != m_merkle_tree[n]) return false;
 
-		// the nodes and piece hash matched the root-hash
-		// insert them into our tree
-
+		// insert all the none-zero nodes into our tree
 		for (auto const& i : to_add)
 		{
 			m_merkle_tree[i.first] = i.second;
@@ -1325,10 +1329,11 @@ namespace {
 		{
 			int sibling = merkle_get_sibling(n);
 			int parent = merkle_get_parent(n);
+
+			// if sibling is zero, we're done.
+			if (m_merkle_tree[sibling].is_all_zeros()) break;
+
 			ret[sibling] = m_merkle_tree[sibling];
-			// we cannot build the tree path if one
-			// of the nodes in the tree is missing
-			TORRENT_ASSERT(!m_merkle_tree[sibling].is_all_zeros());
 			n = parent;
 		}
 		return ret;
