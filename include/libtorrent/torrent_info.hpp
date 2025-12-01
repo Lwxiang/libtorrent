@@ -541,6 +541,18 @@ namespace libtorrent {
 		std::vector<sha1_hash> const& merkle_tree() const { return m_merkle_tree; }
 		void set_merkle_tree(std::vector<sha1_hash>& h)
 		{ TORRENT_ASSERT(h.size() == m_merkle_tree.size() ); m_merkle_tree.swap(h); }
+		void set_merkle_leaf(piece_index_t index, sha1_hash const& h)
+		{
+			TORRENT_ASSERT(index >= piece_index_t(0));
+			TORRENT_ASSERT(index < m_files.end_piece());
+
+			int const idx = m_merkle_first_leaf + static_cast<int>(index);
+
+			TORRENT_ASSERT(idx < int(m_merkle_tree.size()));
+			m_merkle_tree[idx] = h;
+
+			add_merkle_nodes(std::map<int, sha1_hash>{{idx, h}}, index);
+		}
 
 		// ``name()`` returns the name of the torrent.
 		// name contains UTF-8 encoded string.

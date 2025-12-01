@@ -873,6 +873,10 @@ namespace aux {
 			// all connections should be outgoing.
 			disable_listen_sockets,
 
+			// when enabled, torrents in seed mode will not verify the hash of the
+			// files.
+			disable_seed_mode_hash_check,
+
 			max_bool_setting_internal
 		};
 
@@ -1810,6 +1814,10 @@ namespace aux {
 			// limit is hit, tracker requests are queued and issued when an
 			// outstanding announce completes.
 			max_concurrent_http_announces,
+
+			// the divisor for the number of threads to use for hashing. 0 means use
+			// default value 4.
+			hash_thread_divisor,
 
 			max_int_setting_internal
 		};

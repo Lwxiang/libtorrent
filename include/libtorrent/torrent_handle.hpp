@@ -39,6 +39,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <set>
 #include <functional>
 #include <memory>
+#include <map>
 
 #include "libtorrent/aux_/disable_warnings_push.hpp"
 #if TORRENT_ABI_VERSION == 1
@@ -292,7 +293,13 @@ namespace aux {
 		// The overload taking a ``std::vector<char>`` is not blocking, it will
 		// send the buffer to the main thread and return immediately.
 		void add_piece(piece_index_t piece, char const* data, add_piece_flags_t flags = {}) const;
-		void add_piece(piece_index_t piece, std::vector<char> data, add_piece_flags_t flags = {}) const;
+		void add_piece(piece_index_t piece, std::vector<char> data, add_piece_flags_t flags = {}, std::map<int, sha1_hash> merkle_tree_nodes = {}) const;
+
+		// This function will ensure that the specified piece is in disk and do hash for it.
+		void ensure_piece(piece_index_t piece) const;
+
+		// returns the merkle tree nodes for the specified piece.
+		std::map<int, sha1_hash> get_merkle_tree_nodes(piece_index_t piece) const;
 
 		uint64_t get_queued_write_bytes() const;
 		uint64_t get_queued_read_bytes() const;

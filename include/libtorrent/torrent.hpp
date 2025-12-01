@@ -435,7 +435,9 @@ namespace libtorrent {
 		int seed_rank(aux::session_settings const& s) const;
 
 		void add_piece(piece_index_t piece, char const* data, add_piece_flags_t flags);
-		void add_piece_async(piece_index_t piece, std::vector<char> data, add_piece_flags_t flags);
+		void add_piece_async(piece_index_t piece, std::vector<char> data, add_piece_flags_t flags, std::map<int, sha1_hash> merkle_tree_nodes);
+		void ensure_piece_async(piece_index_t piece);
+		void on_piece_ensured(piece_index_t piece, sha1_hash const& piece_hash, storage_error const& error);
 
 		uint64_t get_queued_write_bytes() const try
 		{

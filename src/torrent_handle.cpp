@@ -677,9 +677,24 @@ namespace libtorrent {
 	}
 
 	void torrent_handle::add_piece(piece_index_t piece, std::vector<char> data
-		, add_piece_flags_t const flags) const
+		, add_piece_flags_t const flags, std::map<int, sha1_hash> merkle_tree_nodes) const
 	{
-		async_call(&torrent::add_piece_async, piece, std::move(data), flags);
+		async_call(&torrent::add_piece_async, piece, std::move(data), flags, std::move(merkle_tree_nodes));
+	}
+
+	void torrent_handle::ensure_piece(piece_index_t piece) const
+	{
+		async_call(&torrent::ensure_piece_async, piece);
+	}
+
+	std::map<int, sha1_hash> torrent_handle::get_merkle_tree_nodes(piece_index_t piece) const
+	{
+		std::shared_ptr<torrent> t = m_torrent.lock();
+
+		if (!t) return std::map<int, sha1_hash>();
+
+		auto torrent_file = t->torrent_file();
+		return torrent_file.is_merkle_torrent() ? torrent_file.build_merkle_list(piece) : std::map<int, sha1_hash>();
 	}
 
 	uint64_t torrent_handle::get_queued_write_bytes() const
