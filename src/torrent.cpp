@@ -1400,7 +1400,7 @@ bool is_downloading_state(int const st)
 	};
 
 	void torrent::add_piece_async(piece_index_t const piece
-		, std::vector<char> data, add_piece_flags_t const flags)
+		, std::vector<char> data, add_piece_flags_t const flags, std::map<int, sha1_hash> merkle_tree_nodes)
 	{
 		TORRENT_ASSERT(is_single_thread());
 
@@ -1410,6 +1410,10 @@ bool is_downloading_state(int const st)
 
 		// make sure the piece size is correct
 		if (data.size() != std::size_t(m_torrent_file->piece_size(piece)))
+			return;
+
+		// if we have merkle tree nodes, add them first.
+		if (!merkle_tree_nodes.empty() && !add_merkle_nodes(merkle_tree_nodes, piece))
 			return;
 
 		add_piece(piece, data.data(), flags);
@@ -1495,6 +1499,47 @@ bool is_downloading_state(int const st)
 				verify_piece(p.piece);
 			}
 		}
+	}
+
+	void torrent::ensure_piece_async(piece_index_t piece)
+	{
+		m_ses.disk_thread().async_hash(m_storage, piece, disk_interface::sequential_access | disk_interface::volatile_read, std::bind(&torrent::on_piece_ensured, shared_from_this(), _1, _2, _3));
+	}
+
+	void torrent::on_piece_ensured(piece_index_t piece, sha1_hash const& piece_hash, storage_error const& error)
+	{
+		TORRENT_ASSERT(is_single_thread());
+
+		if (error)
+		{
+			handle_disk_error("hash", error);
+			return;
+		}
+
+		// update merkle tree from leaf node, will calculate to upper nodes.
+		m_torrent_file->set_merkle_leaf(piece, piece_hash);
+
+		// ensure piece_picker exists
+		need_picker();
+
+		// directly mark piece as have (no need for piece_passed)
+		// we_have will handle all necessary state updates, including:
+		// - if piece is in download queue, remove it first
+		// - mark as have, update counters
+		// - update cursor etc
+		m_picker->we_have(piece);
+
+		// notify torrent layer, this will send HAVE messages to all peers
+		we_have(piece);
+
+		// update gauge to reflect the new piece count
+		update_gauge();
+
+		// check if torrent is finished and transition to seed if needed
+		// state_updated() will check is_finished() and call finished() if needed
+		// finished() will check is_seed() and call completed() if needed
+		// completed() will call maybe_done_flushing() to set m_have_all = true
+		state_updated();
 	}
 
 	void torrent::on_disk_write_complete(storage_error const& error

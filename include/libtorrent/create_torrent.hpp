@@ -215,6 +215,9 @@ namespace libtorrent {
 		// the torrent from.
 		file_storage const& files() const { return m_files; }
 
+		// sets the salt used to generate the info-hash of the torrent.
+		void set_info_salt(std::string const& salt) { m_info_salt = salt; }
+
 		// Sets the comment for the torrent. The string ``str`` should be utf-8 encoded.
 		// The comment in a torrent file is optional.
 		void set_comment(char const* str);
@@ -335,6 +338,9 @@ namespace libtorrent {
 		// this will be set to that, otherwise it'll be
 		// 1970, Jan 1
 		time_t m_creation_date;
+
+		// a salt used to generate the info-hash
+		std::string m_info_salt;
 
 		// if a comment is found in the torrent file
 		// this will be set to that comment

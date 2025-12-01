@@ -568,6 +568,9 @@ namespace {
 
 		info["name"] = m_files.name();
 
+		if (!m_info_salt.empty())
+			info["x-info-salt"] = m_info_salt;
+
 		if (!m_root_cert.empty())
 			info["ssl-cert"] = m_root_cert;
 
